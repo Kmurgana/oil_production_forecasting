@@ -9,10 +9,14 @@ def test_model_output_format():
     _, test_df = split_dataset(df)
     X_test = test_df.drop(columns=["period", "target"])
 
-    y_pred = predictor.predict(X_test)
+    X_input = X_test.iloc[:3].values  # shape (3, n_features)
+    X_input = X_input.reshape((1, 3, X_input.shape[1]))  # batch=1, timesteps=3, features
 
-    assert isinstance(y_pred, (list, pd.Series, np.ndarray)), "Prediction must be array-like."
-    assert len(y_pred) == len(X_test), "Prediction length must match input length."
+    y_pred = predictor.model.predict(X_input)
+
+    assert isinstance(y_pred, np.ndarray), "Prediction must be a numpy array."
+    assert y_pred.shape[0] == 1, "Prediction batch size must match input batch size."
+
 
 def test_model_consistency():
     predictor = LSTMPredictor()
