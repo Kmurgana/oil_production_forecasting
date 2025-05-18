@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "oil_production_forecasting"
+version = "0.0.1"
+description = "Forecasting oil production using time series models."
+authors = [
+  { name = "Kevin Murgana" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+requires-python = "~=3.12.8"
+
+[tool.ruff]
+line-length = 99
+src = ["oil_production_forecasting"]
+target-version = "py312"
+include = ["pyproject.toml", "oil_production_forecasting/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["oil_production_forecasting"]
+force-sort-within-sections = true
+

@@ -1,0 +1,1 @@
+{"units": 64, "dropout": 0.2, "optimizer": "adam", "loss": "mean_squared_error", "epochs": 100, "batch_size": 32, "look_back": 3, "features": 14}
