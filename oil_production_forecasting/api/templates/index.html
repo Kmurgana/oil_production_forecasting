@@ -6,21 +6,23 @@
     <title>Oil Production Forecast</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style id="theme-style">
+    <style>
         body {
             background-color: #f8f9fa;
-            padding-top: 50px;
             color: #212529;
+            padding-top: 50px;
         }
         .container {
             max-width: 700px;
             background: white;
+            color: #212529;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
-        .form-label {
+        .form-label, .input-table th {
             font-weight: bold;
+            color: #212529;
         }
         .btn-primary {
             width: 100%;
@@ -36,6 +38,11 @@
         }
         .input-table th, .input-table td {
             text-align: center;
+            vertical-align: middle;
+        }
+        .input-table input {
+            background: #fff;
+            color: #212529;
         }
         .theme-toggle {
             position: absolute;
@@ -47,13 +54,61 @@
             width: 100%;
             margin-top: 10px;
         }
+
+        /* DARK THEME */
+        body.dark-theme {
+            background-color: #181a1b !important;
+            color: #f8f9fa !important;
+        }
+        body.dark-theme .container {
+            background: #111 !important;
+            color: #f8f9fa !important;
+        }
+        body.dark-theme .form-label,
+        body.dark-theme .input-table th {
+            color: #fff !important;
+        }
+        body.dark-theme .input-table input {
+            background: #222 !important;
+            color: #fff !important;
+            border: 1px solid #fff;
+        }
+        body.dark-theme .input-table {
+            background: #181a1b !important;
+            color: #fff !important;
+        }
+        body.dark-theme .table-bordered {
+            border-color: #fff !important;
+        }
+        body.dark-theme .table-bordered th,
+        body.dark-theme .table-bordered td {
+            border-color: #fff !important;
+            background: #222 !important;
+            color: #fff !important;
+        }
+        body.dark-theme .alert-success,
+        body.dark-theme .alert-danger {
+            background-color: #2d3436 !important;
+            color: #dfe6e9 !important;
+            border-color: #636e72 !important;
+        }
+        body.dark-theme .btn-primary {
+            background: #212529 !important;
+            color: #fff !important;
+            border: none;
+        }
+        body.dark-theme .btn-outline-secondary {
+            background: #181a1b !important;
+            color: #fff !important;
+            border: 1px solid #fff;
+        }
     </style>
 </head>
 <body>
 <button class="btn btn-secondary theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
 <div class="container position-relative">
     <h2 class="mb-4 text-center">🛢️ Oil Production Forecast</h2>
-    <form id="forecastForm" action="/predict" method="post" autocomplete="off">
+    <form id="forecastForm" autocomplete="off" onsubmit="event.preventDefault();">
         <table class="table table-bordered input-table">
             <thead>
                 <tr>
@@ -66,218 +121,176 @@
             <tbody>
                 <tr>
                     <th>Production (MBBL/D)</th>
-                    {% for t, default in [(3, 3075), (2, 3080), (1, 3090)] %}
-                    <td>
-                        <input class="form-control" type="number" step="any" name="prod_{{t}}" value="{{ defaults['prod_' ~ t] if defaults else default }}" required>
-                    </td>
-                    {% endfor %}
+                    <td><input class="form-control" type="number" step="any" name="prod_3" id="prod_3" required></td>
+                    <td><input class="form-control" type="number" step="any" name="prod_2" id="prod_2" required></td>
+                    <td><input class="form-control" type="number" step="any" name="prod_1" id="prod_1" required></td>
                 </tr>
                 <tr>
                     <th>Rolling Mean (3 periods)</th>
-                    {% for t, default in [(3, 3081), (2, 3082), (1, 3085)] %}
-                    <td>
-                        <input class="form-control" type="number" step="any" name="rolling_mean_3_{{t}}" value="{{ defaults['rolling_mean_3_' ~ t] if defaults else default }}" required>
-                    </td>
-                    {% endfor %}
+                    <td><input class="form-control" type="number" step="any" name="rolling_mean_3_3" id="rolling_mean_3_3" required></td>
+                    <td><input class="form-control" type="number" step="any" name="rolling_mean_3_2" id="rolling_mean_3_2" required></td>
+                    <td><input class="form-control" type="number" step="any" name="rolling_mean_3_1" id="rolling_mean_3_1" required></td>
                 </tr>
                 <tr>
                     <th>Month</th>
-                    {% for t, default in [(3, 4), (2, 4), (1, 4)] %}
-                    <td>
-                        <input class="form-control" type="number" name="month_{{t}}" value="{{ defaults['month_' ~ t] if defaults else default }}" required>
-                    </td>
-                    {% endfor %}
+                    <td><input class="form-control" type="number" name="month_3" id="month_3" required></td>
+                    <td><input class="form-control" type="number" name="month_2" id="month_2" required></td>
+                    <td><input class="form-control" type="number" name="month_1" id="month_1" required></td>
                 </tr>
                 <tr>
                     <th>Quarter</th>
-                    {% for t, default in [(3, 2), (2, 2), (1, 2)] %}
-                    <td>
-                        <input class="form-control" type="number" name="quarter_{{t}}" value="{{ defaults['quarter_' ~ t] if defaults else default }}" required>
-                    </td>
-                    {% endfor %}
+                    <td><input class="form-control" type="number" name="quarter_3" id="quarter_3" required></td>
+                    <td><input class="form-control" type="number" name="quarter_2" id="quarter_2" required></td>
+                    <td><input class="form-control" type="number" name="quarter_1" id="quarter_1" required></td>
                 </tr>
             </tbody>
         </table>
-        <button class="btn btn-primary" type="submit">🚀 Predict</button>
+        <button class="btn btn-primary" type="submit" id="predictBtn">🚀 Predict</button>
         <button type="button" class="btn btn-outline-secondary reset-btn" onclick="resetFormAndChart()">🔄 Reset</button>
     </form>
 
-    {% if prediction %}
-        <div class="alert alert-success result text-center" role="alert">
-            <h4 class="alert-heading">📈 Forecast Result</h4>
-            <p class="mb-0">Predicted MBBL/D: <strong>{{ prediction }}</strong></p>
-        </div>
-    {% elif error %}
-        <div class="alert alert-danger result text-center" role="alert">
-            <h4 class="alert-heading">⚠️ Error</h4>
-            <p class="mb-0">{{ error }}</p>
-        </div>
-    {% endif %}
-
-    {% if chart_labels and chart_values %}
-    <div id="forecastChartContainer">
+    <div id="resultSection"></div>
+    <div id="forecastChartContainer" style="display:none;">
         <canvas id="forecastChart" width="600" height="300"></canvas>
     </div>
-    <script>
-        let forecastChart = null;
-        function renderChart() {
-            const ctx = document.getElementById('forecastChart').getContext('2d');
-            if (forecastChart) {
-                forecastChart.destroy();
-            }
-            const labels = {{ chart_labels|tojson }};
-            const values = {{ chart_values|tojson }};
-            forecastChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Historical MBBL/D',
-                            data: values.slice(0, -1),
-                            fill: false,
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                            tension: 0.2,
-                            pointRadius: 4,
-                            pointBackgroundColor: 'rgba(54, 162, 235, 1)'
-                        },
-                        {
-                            label: 'Prediction',
-                            data: [null, null, null, values[values.length - 1]],
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            backgroundColor: 'rgba(255,99,132,1)',
-                            pointStyle: 'circle',
-                            pointRadius: [0,0,0,8],
-                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                            borderDash: [6,3],
-                            fill: false,
-                            tension: 0.2,
-                            showLine: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                        title: { display: true, text: 'Production Forecast (MBBL/D)' }
-                    },
-                    scales: {
-                        x: { title: { display: true, text: 'Period' } },
-                        y: { title: { display: true, text: 'MBBL/D' }, beginAtZero: false }
-                    }
-                }
-            });
-        }
-        renderChart();
-    </script>
-    {% endif %}
 </div>
 
 <script>
-function toggleTheme() {
-    const themeStyle = document.getElementById('theme-style');
-    if (!themeStyle) return;
-    if (themeStyle.innerHTML.includes('background-color: #f8f9fa;')) {
-        // Switch to dark
-        themeStyle.innerHTML = `
-            body {
-                background-color: #181a1b;
-                padding-top: 50px;
-                color: #f8f9fa;
-            }
-            .container {
-                max-width: 700px;
-                background: #23272b;
-                color: #f8f9fa;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 0 20px rgba(0,0,0,0.2);
-            }
-            .form-label {
-                font-weight: bold;
-                color: #f8f9fa;
-            }
-            .btn-primary {
-                width: 100%;
-                padding: 12px;
-                font-size: 16px;
-            }
-            .result {
-                margin-top: 20px;
-            }
-            #forecastChart {
-                margin-top: 30px;
-                background: transparent;
-            }
-            .input-table th, .input-table td {
-                text-align: center;
-            }
-        `;
-        localStorage.setItem("theme", "dark");
-    } else {
-        // Switch to light
-        themeStyle.innerHTML = `
-            body {
-                background-color: #f8f9fa;
-                padding-top: 50px;
-                color: #212529;
-            }
-            .container {
-                max-width: 700px;
-                background: white;
-                color: #212529;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            }
-            .form-label {
-                font-weight: bold;
-                color: #212529;
-            }
-            .btn-primary {
-                width: 100%;
-                padding: 12px;
-                font-size: 16px;
-            }
-            .result {
-                margin-top: 20px;
-            }
-            #forecastChart {
-                margin-top: 30px;
-                background: transparent;
-            }
-            .input-table th, .input-table td {
-                text-align: center;
-            }
-        `;
-        localStorage.setItem("theme", "light");
-    }
-}
+    // Replace these with server-provided defaults if needed
+    const DEFAULTS = {
+        prod_3: 3075, prod_2: 3080, prod_1: 3090,
+        rolling_mean_3_3: 3081, rolling_mean_3_2: 3082, rolling_mean_3_1: 3085,
+        month_3: 4, month_2: 4, month_1: 4,
+        quarter_3: 2, quarter_2: 2, quarter_1: 2
+    };
 
-window.onload = function() {
-    // Set initial theme
-    const theme = localStorage.getItem("theme") || "light";
-    if (theme === "dark") toggleTheme();
-};
+    // Used for quick "fake" prediction (replace with backend API as needed)
+    function predictProduction(prods) {
+        // Example: simple mean + random noise for illustration
+        return (prods.reduce((a, b) => a + b, 0) / prods.length + (Math.random() - 0.5) * 10).toFixed(2);
+    }
 
-function resetFormAndChart() {
-    document.getElementById("forecastForm").reset();
-    // Remove chart if it exists
-    if (window.forecastChart) {
-        window.forecastChart.destroy();
-        window.forecastChart = null;
+    // --- THEME LOGIC ---
+    function toggleTheme() {
+        const body = document.body;
+        body.classList.toggle('dark-theme');
+        if (body.classList.contains('dark-theme')) {
+            localStorage.setItem("theme", "dark");
+        } else {
+            localStorage.setItem("theme", "light");
+        }
     }
-    // Also remove chart container if you want:
-    const chartContainer = document.getElementById("forecastChartContainer");
-    if (chartContainer) {
-        chartContainer.innerHTML = "";
+    window.onload = function() {
+        // Set initial theme
+        const theme = localStorage.getItem("theme") || "light";
+        if (theme === "dark") document.body.classList.add('dark-theme');
+        setDefaults();
+        updateChartFromInputs();
+    };
+
+    // --- FORM DEFAULTS AND RESET ---
+    function setDefaults() {
+        for (const [key, val] of Object.entries(DEFAULTS)) {
+            document.getElementById(key).value = val;
+        }
     }
-    // Optionally reload page to get new default values
-    // location.reload();
-}
+    function resetFormAndChart() {
+        setDefaults();
+        document.getElementById('resultSection').innerHTML = '';
+        updateChartFromInputs();
+    }
+
+    // --- PREDICT AND CHART ---
+    let forecastChart = null;
+    document.getElementById("forecastForm").onsubmit = function(e) {
+        e.preventDefault();
+        // Get user values
+        const prods = [
+            Number(document.getElementById('prod_3').value),
+            Number(document.getElementById('prod_2').value),
+            Number(document.getElementById('prod_1').value)
+        ];
+        const prediction = predictProduction(prods);
+        // Show result
+        document.getElementById('resultSection').innerHTML =
+            `<div class="alert alert-success result text-center" role="alert">
+                <h4 class="alert-heading">📈 Forecast Result</h4>
+                <p class="mb-0">Predicted MBBL/D: <strong>${prediction}</strong></p>
+            </div>`;
+        // Show chart
+        updateChart(prods, prediction);
+        document.getElementById('forecastChartContainer').style.display = 'block';
+    };
+
+    // --- CHART LOGIC ---
+    function updateChart(prods, prediction) {
+        const ctx = document.getElementById('forecastChart').getContext('2d');
+        if (forecastChart) forecastChart.destroy();
+        const labels = ["t-3", "t-2", "t-1", "Prediction"];
+        const values = [...prods, Number(prediction)];
+        forecastChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Production (MBBL/D)',
+                        data: values.slice(0, 3),
+                        fill: false,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        tension: 0.2,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointBorderColor: 'rgba(54, 162, 235, 1)'
+                    },
+                    {
+                        label: 'Prediction',
+                        data: [null, null, values[2], values[3]], // Connect last real to prediction
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255,99,132,1)',
+                        pointStyle: 'circle',
+                        pointRadius: [0, 0, 0, 8],
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        borderDash: [6, 3],
+                        fill: false,
+                        tension: 0.2,
+                        showLine: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Production Forecast (MBBL/D)' }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Period' } },
+                    y: { title: { display: true, text: 'MBBL/D' }, beginAtZero: false }
+                }
+            }
+        });
+    }
+
+    // --- LIVE CHART UPDATE ON USER INPUT ---
+    function updateChartFromInputs() {
+        const prods = [
+            Number(document.getElementById('prod_3').value),
+            Number(document.getElementById('prod_2').value),
+            Number(document.getElementById('prod_1').value)
+        ];
+        // Don't predict on every keystroke; use the default as prediction for now, or just extrapolate last value
+        const prediction = predictProduction(prods);
+        updateChart(prods, prediction);
+        document.getElementById('resultSection').innerHTML = '';
+        document.getElementById('forecastChartContainer').style.display = 'block';
+    }
+    // Listen for changes to Production (MBBL/D) inputs to update the chart live
+    ['prod_3', 'prod_2', 'prod_1'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateChartFromInputs);
+    });
+
 </script>
-
 </body>
 </html>
